@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import Animated, {
   SharedValue,
   interpolate,
@@ -11,6 +11,7 @@ import {
   GestureDetector,
   Directions,
 } from "react-native-gesture-handler";
+import { getCardFlag } from "@/utils/getCardFlag";
 
 export enum CARD_SIDE {
   front = 0,
@@ -20,7 +21,6 @@ export enum CARD_SIDE {
 type CreditCardProps = {
   cardSide: SharedValue<number>;
   data: {
-    apelido: string;
     name: string;
     number: string;
     date: string;
@@ -29,6 +29,21 @@ type CreditCardProps = {
 };
 
 export function CreditCard({ cardSide, data }: CreditCardProps) {
+  const flag = getCardFlag(data.number);
+
+  const cardColors = {
+    visa: "rgba(26, 31, 113, 0.3)",
+    mastercard: "rgba(235, 0, 27, 0.3)",
+    amex: "rgba(78, 155, 110, 0.3)",
+    elo: "rgba(0, 114, 187, 0.3)",
+    diners: "rgba(255, 114, 0, 0.3)",
+    discover: "rgba(255, 111, 50, 0.3)",
+    jcb: "rgba(43, 97, 167, 0.3)",
+    unknown: "rgba(211, 211, 211, 0.3)",
+  };
+
+  const cardColor = cardColors[flag] || cardColors.unknown;
+
   const frontAnimatedStyles = useAnimatedStyle(() => {
     const rotateValue = interpolate(
       cardSide.value,
@@ -89,8 +104,8 @@ export function CreditCard({ cardSide, data }: CreditCardProps) {
           style={[
             frontAnimatedStyles,
             {
-              backgroundColor: "rgba(225, 225, 255, 0.6)",
-              borderColor: "rgba(225, 225, 255, 0.6)",
+              backgroundColor: cardColor,
+              borderColor: cardColor,
             },
           ]}
         >
@@ -102,15 +117,39 @@ export function CreditCard({ cardSide, data }: CreditCardProps) {
 
           <View className="flex-row items-center gap-3">
             <View className="h-[24px] w-[24px] rounded-full bg-[#8795A0]" />
-            <Text>{data.apelido || "Meu cartão"}</Text>
+            <Text className="text-white shadow">Meu cartão</Text>
           </View>
 
           <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-bold">
+            <Text className="text-lg font-bold text-white shadow">
               {data.name || "Nome igual ao do cartão"}
             </Text>
 
-            <View className="flex-row items-center">{/* Colocar ícone */}</View>
+            <View className="flex-row items-center">
+              {flag !== "unknown" && (
+                <Image
+                  source={
+                    flag === "visa"
+                      ? require("@/assets/visa.png")
+                      : flag === "mastercard"
+                      ? require("@/assets/mastercard.png")
+                      : flag === "amex"
+                      ? require("@/assets/amex.png")
+                      : flag === "elo"
+                      ? require("@/assets/elo.png")
+                      : flag === "diners"
+                      ? require("@/assets/diners.png")
+                      : flag === "discover"
+                      ? require("@/assets/discover.png")
+                      : flag === "jcb"
+                      ? require("@/assets/jcb.png")
+                      : null
+                  }
+                  className="w-14 h-8"
+                  resizeMode="contain"
+                />
+              )}
+            </View>
           </View>
         </Animated.View>
 
@@ -119,32 +158,36 @@ export function CreditCard({ cardSide, data }: CreditCardProps) {
           style={[
             backAnimatedStyles,
             {
-              backgroundColor: "rgba(225, 225, 255, 0.5)",
+              backgroundColor: cardColor,
             },
           ]}
         >
           <View className="mt-4 h-12 bg-black/75" />
           <View className="justify-between px-6 pt-6">
             <View>
-              <Text className="text-base text-[#4F5F64]">Número do cartão</Text>
-              <Text className="text-lg font-bold">
+              <Text className="text-base text-white shadow">
+                Número do cartão
+              </Text>
+              <Text className="text-lg font-bold text-white shadow">
                 {data.number || "0000 0000 0000 0000"}
               </Text>
             </View>
 
             <View className="mt-2 flex-row justify-between">
               <View>
-                <Text className="leading-1 text-base text-[#4F5F64]">
+                <Text className="leading-1 text-base text-white shadow">
                   Validade
                 </Text>
-                <Text className="text-lg font-bold leading-none">
+                <Text className="text-lg font-bold leading-none text-white shadow">
                   {data.date || "00/00"}
                 </Text>
               </View>
 
               <View>
-                <Text className="leading-1 text-base text-[#4F5F64]">CVV</Text>
-                <Text className="text-lg font-bold leading-none">
+                <Text className="leading-1 text-base text-white shadow">
+                  CVV
+                </Text>
+                <Text className="text-lg font-bold leading-none text-white shadow">
                   {data.code || "000"}
                 </Text>
               </View>

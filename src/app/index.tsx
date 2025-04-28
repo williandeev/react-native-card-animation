@@ -1,5 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Input } from "@/components/input";
 import { useState } from "react";
 import { CARD_SIDE, CreditCard } from "@/components/credit-card";
@@ -7,8 +6,6 @@ import { useSharedValue } from "react-native-reanimated";
 import { ArrowLeftRight } from "lucide-react-native";
 
 export default function NewCreditCard() {
-  const [loading, setLoading] = useState(false);
-  const [apelido, setApelido] = useState("");
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [date, setDate] = useState("");
@@ -33,84 +30,62 @@ export default function NewCreditCard() {
   }
 
   return (
-    <View className="flex-1 gap-6 px-6">
-      <Text className="mt-5 text-xs uppercase">NOVO CARTÃO DE CRÉDITO</Text>
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
+      <View className="flex-1 gap-6 px-6 justify-center">
+        <View className="items-center justify-center gap-2 mb-4">
+          <CreditCard
+            cardSide={cardSide}
+            data={{
+              name,
+              number,
+              date,
+              code,
+            }}
+          />
 
-      <View className="items-center justify-center gap-2">
-        <CreditCard
-          cardSide={cardSide}
-          data={{
-            apelido,
-            name,
-            number,
-            date,
-            code,
-          }}
-        />
+          <TouchableOpacity
+            onPress={handleFlipCard}
+            className="mt-4 flex-row items-center gap-3"
+          >
+            <Text className="text-white font-semibold">Virar cartão</Text>
+            <ArrowLeftRight color={"#fff"} size={19} />
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleFlipCard}>
-          <Text>
-            Virar cartão
-            <ArrowLeftRight />
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Input
-        placeholder="Nome do titular"
-        onFocus={showFrontCard}
-        onChangeText={setName}
-      />
-
-      <Input
-        placeholder="Número do cartão"
-        keyboardType="numeric"
-        maxLength={16}
-        onFocus={showBackCard}
-        onChangeText={setNumber}
-      />
-
-      <View style={styles.inputInLine}>
         <Input
-          placeholder="01/02"
-          keyboardType="numeric"
-          maxLength={5}
-          style={styles.inputSmall}
-          onFocus={showBackCard}
-          onChangeText={setDate}
+          placeholder="Nome do Titular"
+          onFocus={showFrontCard}
+          onChangeText={setName}
         />
 
         <Input
-          placeholder="123"
+          placeholder="Número do Cartão"
           keyboardType="numeric"
-          maxLength={3}
-          style={styles.inputSmall}
+          maxLength={16}
           onFocus={showBackCard}
-          onChangeText={setCode}
+          onChangeText={setNumber}
         />
+
+        <View className="flex-row gap-4">
+          <Input
+            placeholder="MM/AA"
+            keyboardType="numeric"
+            maxLength={5}
+            style={{ width: 74 }}
+            onFocus={showBackCard}
+            onChangeText={setDate}
+          />
+
+          <Input
+            placeholder="CVV"
+            keyboardType="numeric"
+            maxLength={3}
+            style={{ width: 74 }}
+            onFocus={showBackCard}
+            onChangeText={setCode}
+          />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 32,
-    marginTop: 62,
-  },
-  button: {
-    alignItems: "center",
-    marginVertical: 32,
-  },
-  form: {
-    gap: 12,
-  },
-  inputInLine: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  inputSmall: {
-    width: 74,
-  },
-});
