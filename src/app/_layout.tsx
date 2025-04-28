@@ -1,8 +1,8 @@
 import { Slot } from "expo-router";
-import "react-native-reanimated";
-import { SafeAreaView, StatusBar, View } from "react-native";
+import { SafeAreaView, StatusBar } from "react-native";
 import { colorScheme, useColorScheme } from "nativewind";
 import "@/styles/global.css";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const { colorScheme: currentColorScheme } = useColorScheme();
@@ -10,7 +10,7 @@ export default function RootLayout() {
   colorScheme.set("light");
 
   return (
-    <>
+    <GestureHandlerRootView>
       <StatusBar
         barStyle={
           currentColorScheme === "light" ? "dark-content" : "light-content"
@@ -20,6 +20,6 @@ export default function RootLayout() {
       <SafeAreaView className="flex-1 bg-white dark:bg-black">
         <Slot />
       </SafeAreaView>
-    </>
+    </GestureHandlerRootView>
   );
 }
